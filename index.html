@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Enquiry | Yes2Broker</title>
+<link rel="icon" type="image/jpeg" href="Assets/fav.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --blue-900:#0A3D7A; --blue-700:#0B4A9C; --blue-600:#1257B8; --blue-500:#1E7BE8;
+    --blue-100:#EAF2FD; --blue-50:#F4F8FE; --ink:#0F1B2D; --muted:#5B6B82;
+    --line:#E1E9F4; --white:#FFFFFF; --success:#15803D; --success-bg:#ECFDF3;
+    --error:#DC2626; --error-bg:#FEF2F2; --shadow:0 18px 50px -12px rgba(11,74,156,.28); --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1200px 600px at 50% -10%, #1E7BE8 0%, rgba(30,123,232,0) 60%),
+               linear-gradient(180deg,#0B4A9C 0%, #0A3D7A 100%);
+    min-height:100dvh;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px 40px;
+  }
+  .shell{width:100%;max-width:460px;}
+
+  .brand{display:flex;flex-direction:column;align-items:center;gap:10px;margin:8px 0 18px;text-align:center;}
+  .brand img{height:46px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25));}
+  .brand .tag{color:#CFE2FB;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;}
+
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+
+  .project{background:linear-gradient(135deg,var(--blue-700) 0%, var(--blue-500) 100%);
+    color:#fff;padding:20px 22px 18px;position:relative;}
+  .project::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;
+    background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);}
+  .project .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#BFD9F8;font-weight:600;margin-bottom:6px;}
+  .project h1{font-size:22px;font-weight:800;line-height:1.15;letter-spacing:-.01em;}
+  .project .sub{font-size:13px;color:#D6E6FB;margin-top:4px;font-weight:500;}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;position:relative;z-index:1;}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.22);color:#fff;font-size:12px;font-weight:600;
+    padding:5px 10px;border-radius:999px;backdrop-filter:blur(4px);}
+  .chip .dot{width:5px;height:5px;border-radius:50%;background:#fff;opacity:.8;}
+
+  .body{padding:22px 22px 24px;}
+  .lead-in{font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.45;}
+
+  .field{margin-bottom:15px;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:7px;}
+  label .req{color:var(--blue-500);}
+
+  input,select{width:100%;font-family:inherit;font-size:16px;color:var(--ink);background:var(--blue-50);
+    border:1.5px solid var(--line);border-radius:11px;padding:13px 14px;
+    transition:border-color .15s, box-shadow .15s, background .15s;appearance:none;-webkit-appearance:none;}
+  input::placeholder{color:#9AA8BC;}
+  input:focus,select:focus{outline:none;border-color:var(--blue-500);background:#fff;box-shadow:0 0 0 4px rgba(30,123,232,.13);}
+
+  .phone-wrap{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:11px;
+    background:var(--blue-50);transition:border-color .15s, box-shadow .15s, background .15s;overflow:hidden;}
+  .phone-wrap:focus-within{border-color:var(--blue-500);background:#fff;box-shadow:0 0 0 4px rgba(30,123,232,.13);}
+  .phone-wrap .isd{display:flex;align-items:center;padding:0 12px;font-size:15px;font-weight:600;
+    color:var(--blue-700);background:var(--blue-100);border-right:1.5px solid var(--line);font-family:'JetBrains Mono',monospace;}
+  .phone-wrap input{border:none;background:transparent;box-shadow:none;border-radius:0;}
+  .phone-wrap input:focus{box-shadow:none;}
+
+  .select-wrap{position:relative;}
+  .select-wrap::after{content:"";position:absolute;right:15px;top:50%;width:9px;height:9px;
+    border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:translateY(-65%) rotate(45deg);pointer-events:none;}
+  select{padding-right:36px;cursor:pointer;}
+
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px;}
+  .err-text{color:var(--error);font-size:12px;margin-top:6px;display:none;font-weight:500;}
+  .field.invalid input,.field.invalid select,.field.invalid .phone-wrap{border-color:var(--error);background:var(--error-bg);}
+  .field.invalid .err-text{display:block;}
+
+  .submit{width:100%;margin-top:8px;font-family:inherit;font-size:16px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,var(--blue-600) 0%, var(--blue-500) 100%);border:none;border-radius:12px;
+    padding:16px;cursor:pointer;box-shadow:0 10px 24px -8px rgba(18,87,184,.6);
+    transition:transform .12s, box-shadow .2s, opacity .2s;display:flex;align-items:center;justify-content:center;gap:9px;}
+  .submit:active{transform:translateY(1px);}
+  .submit:disabled{opacity:.65;cursor:not-allowed;}
+  .spinner{width:17px;height:17px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;
+    border-radius:50%;animation:spin .6s linear infinite;display:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .trust{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:11.5px;color:var(--muted);}
+  .trust svg{width:13px;height:13px;}
+
+  .alert{display:none;align-items:flex-start;gap:10px;padding:13px 14px;border-radius:11px;
+    font-size:13.5px;font-weight:500;margin-bottom:16px;line-height:1.4;}
+  .alert.show{display:flex;}
+  .alert.error{background:var(--error-bg);color:var(--error);border:1px solid #FECACA;}
+  .alert svg{width:18px;height:18px;flex-shrink:0;margin-top:1px;}
+
+  .done{display:none;text-align:center;padding:34px 22px 38px;}
+  .done.show{display:block;}
+  .done .ok{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;background:var(--success-bg);
+    display:flex;align-items:center;justify-content:center;}
+  .done .ok svg{width:32px;height:32px;color:var(--success);}
+  .done h2{font-size:20px;font-weight:800;margin-bottom:8px;}
+  .done p{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:20px;}
+  .done button{font-family:inherit;font-size:14px;font-weight:600;color:var(--blue-700);
+    background:var(--blue-100);border:none;border-radius:10px;padding:12px 22px;cursor:pointer;}
+
+  /* loading + fatal states (in white card) */
+  .state{display:none;text-align:center;padding:46px 24px;}
+  .state.show{display:block;}
+  .state .bigspin{width:38px;height:38px;margin:0 auto 16px;border:3px solid var(--line);
+    border-top-color:var(--blue-500);border-radius:50%;animation:spin .7s linear infinite;}
+  .state h2{font-size:18px;font-weight:800;margin-bottom:8px;color:var(--ink);}
+  .state p{font-size:14px;color:var(--muted);line-height:1.5;}
+
+  .foot{text-align:center;margin-top:18px;font-size:11.5px;color:#9FBEE6;}
+  .foot a{color:#CFE2FB;text-decoration:none;font-weight:600;}
+
+  @media (max-width:380px){ .row{grid-template-columns:1fr;} .project h1{font-size:20px;} }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="brand">
+      <img src="Assets/logo.webp" alt="Yes2Broker" onerror="this.style.display='none'"/>
+      <span class="tag">Authorised Channel Partner</span>
+    </div>
+
+    <div class="card">
+      <!-- Loading -->
+      <div class="state show" id="loadingState">
+        <div class="bigspin"></div>
+        <h2>Loading project…</h2>
+        <p>Just a moment.</p>
+      </div>
+
+      <!-- Fatal (no/invalid project) -->
+      <div class="state" id="fatalState">
+        <h2 id="fatalTitle">Project not found</h2>
+        <p id="fatalMsg">This enquiry link looks incorrect. Please check the link or contact us.</p>
+      </div>
+
+      <!-- Project banner (populated from Supabase) -->
+      <div class="project" id="projectBanner" style="display:none;">
+        <div class="eyebrow">Now Enquiring</div>
+        <h1 id="pName"></h1>
+        <div class="sub" id="pTagline"></div>
+        <div class="chips" id="pChips"></div>
+      </div>
+
+      <!-- Form -->
+      <div class="body" id="formBody" style="display:none;">
+        <p class="lead-in">Share your details and our team will reach out with floor plans, pricing &amp; site-visit options.</p>
+
+        <div class="alert error" id="alertErr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span id="alertErrText"></span>
+        </div>
+
+        <form id="leadForm" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="firstName">First Name <span class="req">*</span></label>
+              <input type="text" id="firstName" autocomplete="given-name" placeholder="First name" />
+              <div class="err-text">Please enter your first name</div>
+            </div>
+            <div class="field">
+              <label for="lastName">Last Name <span class="req">*</span></label>
+              <input type="text" id="lastName" autocomplete="family-name" placeholder="Last name" />
+              <div class="err-text">Please enter your last name</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="phone">Mobile Number <span class="req">*</span></label>
+            <div class="phone-wrap">
+              <span class="isd">+91</span>
+              <input type="tel" id="phone" inputmode="numeric" maxlength="10" autocomplete="tel" placeholder="10-digit mobile number" />
+            </div>
+            <div class="err-text">Enter a valid 10-digit mobile number</div>
+          </div>
+
+          <div class="field">
+            <label for="propertyType">Property Type <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="propertyType">
+                <option value="" disabled selected>Select property type</option>
+              </select>
+            </div>
+            <div class="err-text">Please select a property type</div>
+          </div>
+
+          <div class="field" id="otherTypeField" style="display:none;">
+            <label for="otherType">Specify Property Type <span class="req">*</span></label>
+            <input type="text" id="otherType" placeholder="e.g. Penthouse, Duplex, Studio" />
+            <div class="err-text">Please specify the property type</div>
+          </div>
+
+          <div class="field">
+            <label for="budget">Budget <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="budget">
+                <option value="" disabled selected>Select your budget range</option>
+              </select>
+            </div>
+            <div class="err-text">Please select a budget range</div>
+          </div>
+
+          <div class="field">
+            <label for="reference">How did you hear about us? <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="reference">
+                <option value="" disabled selected>Select a reference</option>
+                <option value="Social Media">Social Media</option>
+                <option value="News Paper">News Paper</option>
+                <option value="Friends">Friends</option>
+                <option value="Hoardings">Hoardings</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="err-text">Please select a reference</div>
+          </div>
+
+          <button type="submit" class="submit" id="submitBtn">
+            <span class="spinner" id="spinner"></span>
+            <span id="btnLabel">Submit Enquiry</span>
+          </button>
+
+          <div class="trust">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Your details are safe &amp; never shared.
+          </div>
+        </form>
+      </div>
+
+      <!-- Success -->
+      <div class="done" id="doneState">
+        <div class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h2>Enquiry received!</h2>
+        <p id="donePara">Thank you. Our team will contact you shortly with all the details.</p>
+        <button id="againBtn">Submit another enquiry</button>
+      </div>
+    </div>
+
+    <div class="foot">Powered by <a href="https://yes2broker.in" target="_blank" rel="noopener">Yes2Broker</a></div>
+  </div>
+
+<script>
+  /* ======================================================
+     CONFIG  — fill these two values once
+     ------------------------------------------------------
+     SUPABASE_ANON_KEY must be the LEGACY JWT key (starts
+     with "eyJ..."), NOT the newer "sb_publishable_..." key.
+     ====================================================== */
+  const SUPABASE_URL      = 'https://avgaespihpokalwnohkr.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2Z2Flc3BpaHBva2Fsd25vaGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNTkyNDAsImV4cCI6MjA5NjczNTI0MH0.gEESCAzCHSl9AxssmSjfKK4_wN8BixhLibQtMqGj0IY';
+
+  /* LeadPlus CRM (same for every project) */
+  const API_ENDPOINT = 'https://yesbroker.leadpluss.com/Services/api/TenantLeads/Submit';
+  const VENDOR_KEY   = '9DFDFC38-3317-4604-AF79-3B64793C19F3';
+
+  /* ===== Standard options — IDENTICAL for every project ===== */
+  const PROPERTY_TYPES = ['1 BHK','2 BHK','3 BHK','4 BHK','5 BHK','Other'];
+  const BUDGETS = [
+    { label:'\u20B950 L \u2013 \u20B975 L',        value:5000000  },
+    { label:'\u20B975 L \u2013 \u20B91 Cr',        value:7500000  },
+    { label:'\u20B91 Cr \u2013 \u20B91.25 Cr',     value:10000000 },
+    { label:'\u20B91.25 Cr \u2013 \u20B91.50 Cr',  value:12500000 },
+    { label:'\u20B91.50 Cr \u2013 \u20B92 Cr',     value:15000000 },
+    { label:'\u20B92 Cr & Above',                  value:20000000 }
+  ];
+
+  /* ============== Elements ============== */
+  const loadingState = document.getElementById('loadingState');
+  const fatalState   = document.getElementById('fatalState');
+  const fatalTitle   = document.getElementById('fatalTitle');
+  const fatalMsg     = document.getElementById('fatalMsg');
+  const projectBanner= document.getElementById('projectBanner');
+  const formBody     = document.getElementById('formBody');
+  const doneState    = document.getElementById('doneState');
+  const donePara     = document.getElementById('donePara');
+
+  const form     = document.getElementById('leadForm');
+  const submitBtn= document.getElementById('submitBtn');
+  const spinner  = document.getElementById('spinner');
+  const btnLabel = document.getElementById('btnLabel');
+  const alertErr = document.getElementById('alertErr');
+  const alertErrText = document.getElementById('alertErrText');
+  const otherTypeField = document.getElementById('otherTypeField');
+
+  const f = {
+    firstName   : document.getElementById('firstName'),
+    lastName    : document.getElementById('lastName'),
+    phone       : document.getElementById('phone'),
+    propertyType: document.getElementById('propertyType'),
+    otherType   : document.getElementById('otherType'),
+    budget      : document.getElementById('budget'),
+    reference   : document.getElementById('reference')
+  };
+
+  let CONFIG = null;  // the loaded project
+
+  /* ============== Helpers ============== */
+  function showFatal(title, msg){
+    loadingState.classList.remove('show');
+    fatalTitle.textContent = title;
+    fatalMsg.textContent = msg;
+    fatalState.classList.add('show');
+  }
+  function setInvalid(el, on){ el.closest('.field').classList.toggle('invalid', on); }
+  function clearAll(){
+    Object.values(f).forEach(el => el.closest('.field').classList.remove('invalid'));
+    alertErr.classList.remove('show');
+  }
+  function topAlert(msg){
+    alertErrText.textContent = msg;
+    alertErr.classList.add('show');
+    alertErr.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function esc(s){ return String(s).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+  /* ============== Load project from Supabase ============== */
+  async function loadProject(){
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('project') || '';
+    const slug = raw.replace(/[^a-z0-9-]/gi, '').toLowerCase();
+
+    if(!slug){
+      showFatal('No project specified', 'This enquiry link is missing a project. Please use the official link provided to you.');
+      return;
+    }
+    if(SUPABASE_URL.includes('YOUR-REF')){
+      showFatal('Setup needed', 'Add your Supabase URL and anon key in the form configuration.');
+      return;
+    }
+
+    try{
+      // NOTE: select=* is passed literally (do not URL-encode the *)
+      const url = SUPABASE_URL + '/rest/v1/projects?slug=eq.' + slug + '&active=eq.true&select=*';
+      const res = await fetch(url, {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+      });
+      if(!res.ok){ showFatal('Could not load project', 'Please try again in a moment.'); return; }
+
+      const rows = await res.json();
+      const cfg = rows && rows[0];
+      if(!cfg){
+        showFatal('Project not found', 'We couldn\u2019t find this project. Please check your link.');
+        return;
+      }
+      CONFIG = cfg;
+      renderProject(cfg);
+    }catch(err){
+      console.error('Project load failed:', err);
+      showFatal('Connection problem', 'Please check your internet and refresh the page.');
+    }
+  }
+
+  /* ============== Render the form from config ============== */
+  function renderProject(cfg){
+    document.title = cfg.name + ' — Enquiry | Yes2Broker';
+    document.getElementById('pName').textContent = cfg.name || '';
+    document.getElementById('pTagline').textContent = cfg.tagline || '';
+    donePara.textContent = 'Thank you. Our ' + (cfg.name || '') + ' team will contact you shortly with all the details.';
+
+    // chips
+    const chips = Array.isArray(cfg.chips) ? cfg.chips : [];
+    document.getElementById('pChips').innerHTML =
+      chips.map(c => '<span class="chip"><span class="dot"></span>' + esc(c) + '</span>').join('');
+
+    // property types — standard for every project
+    f.propertyType.insertAdjacentHTML('beforeend',
+      PROPERTY_TYPES.map(t => '<option value="' + esc(t) + '">' + esc(t) + '</option>').join(''));
+
+    // budgets — standard for every project (value = integer pushed to CRM)
+    f.budget.insertAdjacentHTML('beforeend',
+      BUDGETS.map(b => '<option value="' + Number(b.value) + '">' + esc(b.label) + '</option>').join(''));
+
+    // reveal
+    loadingState.classList.remove('show');
+    projectBanner.style.display = 'block';
+    formBody.style.display = 'block';
+  }
+
+  /* ============== Field behaviour ============== */
+  f.phone.addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,10); });
+
+  f.propertyType.addEventListener('change', () => {
+    const isOther = f.propertyType.value === 'Other';
+    otherTypeField.style.display = isOther ? 'block' : 'none';
+    if(!isOther){ f.otherType.value = ''; setInvalid(f.otherType, false); }
+  });
+
+  Object.values(f).forEach(el => {
+    el.addEventListener('input',  () => setInvalid(el,false));
+    el.addEventListener('change', () => setInvalid(el,false));
+  });
+
+  /* ============== Validation ============== */
+  function validate(){
+    let ok = true;
+    if(!f.firstName.value.trim()){ setInvalid(f.firstName,true); ok=false; }
+    if(!f.lastName.value.trim()){ setInvalid(f.lastName,true); ok=false; }
+    if(!/^[6-9]\d{9}$/.test(f.phone.value.trim())){ setInvalid(f.phone,true); ok=false; }
+    if(!f.propertyType.value){ setInvalid(f.propertyType,true); ok=false; }
+    if(f.propertyType.value === 'Other' && !f.otherType.value.trim()){ setInvalid(f.otherType,true); ok=false; }
+    if(!f.budget.value){ setInvalid(f.budget,true); ok=false; }
+    if(!f.reference.value){ setInvalid(f.reference,true); ok=false; }
+    return ok;
+  }
+
+  /* ============== Submit to LeadPlus ============== */
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearAll();
+    if(!CONFIG){ topAlert('Project still loading — please wait a second.'); return; }
+    if(!validate()){ topAlert('Please complete the highlighted fields.'); return; }
+
+    const budgetVal   = f.budget.value;
+    const budgetLabel = f.budget.options[f.budget.selectedIndex].text.trim();
+    const reference   = f.reference.value;
+    const propType    = f.propertyType.value === 'Other' ? f.otherType.value.trim() : f.propertyType.value;
+    const message     = 'Budget: ' + budgetLabel + ' | Reference: ' + reference;
+
+    const payload = {
+      FirstName  : f.firstName.value.trim(),
+      LastName   : f.lastName.value.trim(),
+      ISD        : '+91',
+      Phone      : f.phone.value.trim(),
+      EmailId    : '',
+      State      : CONFIG.state    || '',
+      City       : CONFIG.city     || '',
+      Location   : CONFIG.location || '',
+      Project    : CONFIG.name     || '',
+      PropertyFor: CONFIG.property_for || 'Buy',
+      Property   : CONFIG.property     || 'Flat',
+      PropertyType: propType,
+      Budget     : Number(budgetVal),
+      Reference  : reference,
+      Message    : message,
+      LeadSource : CONFIG.lead_source || 'Walk In',
+      vendor_key : VENDOR_KEY
+    };
+
+    submitBtn.disabled = true; spinner.style.display='inline-block'; btnLabel.textContent='Submitting…';
+    try{
+      const res = await fetch(API_ENDPOINT, {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+      });
+      let data = {}; try{ data = await res.json(); }catch(_){}
+      if(res.ok){
+        projectBanner.style.display='none'; formBody.style.display='none';
+        doneState.classList.add('show');
+      }else{
+        topAlert((data && (data.Message || data.message)) || 'Something went wrong (error ' + res.status + '). Please try again.');
+      }
+    }catch(err){
+      console.error('Lead submit failed:', err);
+      topAlert('Network problem — please check your connection and try again.');
+    }finally{
+      submitBtn.disabled=false; spinner.style.display='none'; btnLabel.textContent='Submit Enquiry';
+    }
+  });
+
+  document.getElementById('againBtn').addEventListener('click', () => {
+    form.reset(); clearAll(); otherTypeField.style.display='none';
+    doneState.classList.remove('show');
+    projectBanner.style.display='block'; formBody.style.display='block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  /* go */
+  loadProject();
+</script>
+</body>
+</html>
