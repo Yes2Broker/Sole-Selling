@@ -257,7 +257,7 @@
       </div>
     </div>
 
-    <div class="foot">Powered by <a href="https://yes2broker.in" target="_blank" rel="noopener">Yes2Broker</a> · build b4</div>
+    <div class="foot">Powered by <a href="https://yes2broker.in" target="_blank" rel="noopener">Yes2Broker</a></div>
   </div>
 
 <script>
@@ -486,8 +486,6 @@
       leadSent = true;
     }finally{
       if(leadSent){
-        // Fire WhatsApp independently of the CRM response (same-origin GET, reliable)
-        sendWhatsApp(payload).catch(e => console.error('WhatsApp trigger failed:', e));
         projectBanner.style.display='none'; formBody.style.display='none';
         doneState.classList.add('show');
       }
@@ -502,17 +500,6 @@
     window.scrollTo({top:0, behavior:'smooth'});
   });
 
-  /* Trigger the WhatsApp template via our server function (keeps WABA key hidden).
-     Sends the project slug so the server loads THAT project's template from Supabase.
-     Fire-and-forget: a WhatsApp problem must never affect the lead/success. */
-  async function sendWhatsApp(payload){
-    try{
-      const params = new URLSearchParams(window.location.search);
-      const slug = (CONFIG && CONFIG.slug) || params.get('project') || '';
-      const q = new URLSearchParams({ slug: slug, phone: payload.Phone, name: payload.FirstName || '' });
-      await fetch('/api/whatsapp?' + q.toString(), { method:'GET', keepalive:true });
-    }catch(_){ /* ignore — lead already saved */ }
-  }
 
   /* go */
   loadProject();
