@@ -277,6 +277,8 @@
       </div>
     </div>
 
+    <pre id="dbgBox" style="display:none;margin-top:14px;padding:12px;background:#fff;border:1px solid #C6CDDF;border-radius:9px;font-size:11px;white-space:pre-wrap;word-break:break-all;color:#121726;"></pre>
+
     <div class="foot">Powered by <a href="https://yes2broker.in" target="_blank" rel="noopener">Yes2Broker</a></div>
   </div>
 
@@ -504,19 +506,21 @@
       Property   : CONFIG.property     || 'Flat',
       PropertyType: propType,
       Budget     : Number(budgetVal),
-      Reference  : reference,
+      Reference  : (reference === 'CP/Broker' || reference === 'Other') ? '' : reference,  // CP/Broker & Other go in Message only
       Message    : message,
       LeadSource : CONFIG.lead_source || 'Walk In',
       vendor_key : VENDOR_KEY
     };
 
     submitBtn.disabled = true; spinner.style.display='inline-block'; btnLabel.textContent='Submitting…';
-    let leadSent = false;
+    let leadSent = false, dbg = '';
     try{
       const res = await fetch(API_ENDPOINT, {
         method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
       });
-      let data = {}; try{ data = await res.json(); }catch(_){}
+      let data = {}, raw = '';
+      try{ raw = await res.text(); data = JSON.parse(raw); }catch(_){}
+      dbg = 'HTTP ' + res.status + ' ' + raw.slice(0,300);
       if(res.ok){
         leadSent = true;
       }else{
@@ -526,6 +530,7 @@
       // The cross-origin CRM response can be unreadable even though the lead WAS
       // created. Treat this as sent rather than showing a false error.
       console.warn('CRM response not readable (lead likely saved):', err);
+      dbg = 'REQUEST FAILED: ' + err.name + ': ' + err.message + '  (blocked by browser/CORS or no network - lead probably NOT saved)';
       leadSent = true;
     }finally{
       if(leadSent){
@@ -533,6 +538,12 @@
         doneState.classList.add('show');
       }
       submitBtn.disabled=false; spinner.style.display='none'; btnLabel.textContent='Submit Enquiry';
+      if(new URLSearchParams(location.search).get('debug')==='1'){
+        const box = document.getElementById('dbgBox');
+        const shown = Object.assign({}, payload); delete shown.vendor_key;
+        box.textContent = 'REQUEST SENT:\n' + JSON.stringify(shown) + '\n\nCRM RESULT:\n' + dbg;
+        box.style.display = 'block';
+      }
     }
   });
 
