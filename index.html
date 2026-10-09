@@ -230,10 +230,30 @@
                 <option value="News Paper">News Paper</option>
                 <option value="Friends">Friends</option>
                 <option value="Hoardings">Hoardings</option>
+                <option value="CP/Broker">CP/Broker</option>
                 <option value="Other">Other</option>
               </select>
             </div>
             <div class="err-text">Please select a reference</div>
+          </div>
+
+          <div id="cpFields" style="display:none;">
+            <div class="field">
+              <label for="cpName">CP/Broker Name <span class="req">*</span></label>
+              <input type="text" id="cpName" placeholder="Name" />
+              <div class="err-text">Please enter the CP/Broker name</div>
+            </div>
+            <div class="field">
+              <label for="cpPhone">CP/Broker Contact Number <span class="req">*</span></label>
+              <input type="tel" id="cpPhone" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" />
+              <div class="err-text">Enter a valid 10-digit contact number</div>
+            </div>
+          </div>
+
+          <div class="field" id="refOtherField" style="display:none;">
+            <label for="refOther">Specify Reference <span class="req">*</span></label>
+            <input type="text" id="refOther" placeholder="How did you hear about us?" />
+            <div class="err-text">Please specify the reference</div>
           </div>
 
           <button type="submit" class="submit" id="submitBtn">
@@ -310,8 +330,13 @@
     propertyType: document.getElementById('propertyType'),
     otherType   : document.getElementById('otherType'),
     budget      : document.getElementById('budget'),
-    reference   : document.getElementById('reference')
+    reference   : document.getElementById('reference'),
+    cpName      : document.getElementById('cpName'),
+    cpPhone     : document.getElementById('cpPhone'),
+    refOther    : document.getElementById('refOther')
   };
+  const cpFields      = document.getElementById('cpFields');
+  const refOtherField = document.getElementById('refOtherField');
 
   let CONFIG = null;  // the loaded project
 
@@ -406,6 +431,16 @@
     if(!isOther){ f.otherType.value = ''; setInvalid(f.otherType, false); }
   });
 
+  f.cpPhone.addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,10); });
+
+  f.reference.addEventListener('change', () => {
+    const v = f.reference.value;
+    cpFields.style.display      = v === 'CP/Broker' ? 'block' : 'none';
+    refOtherField.style.display = v === 'Other'     ? 'block' : 'none';
+    if(v !== 'CP/Broker'){ f.cpName.value=''; f.cpPhone.value=''; setInvalid(f.cpName,false); setInvalid(f.cpPhone,false); }
+    if(v !== 'Other'){ f.refOther.value=''; setInvalid(f.refOther,false); }
+  });
+
   Object.values(f).forEach(el => {
     el.addEventListener('input',  () => setInvalid(el,false));
     el.addEventListener('change', () => setInvalid(el,false));
@@ -421,6 +456,11 @@
     if(f.propertyType.value === 'Other' && !f.otherType.value.trim()){ setInvalid(f.otherType,true); ok=false; }
     if(!f.budget.value){ setInvalid(f.budget,true); ok=false; }
     if(!f.reference.value){ setInvalid(f.reference,true); ok=false; }
+    if(f.reference.value === 'CP/Broker'){
+      if(!f.cpName.value.trim()){ setInvalid(f.cpName,true); ok=false; }
+      if(!/^[6-9]\d{9}$/.test(f.cpPhone.value.trim())){ setInvalid(f.cpPhone,true); ok=false; }
+    }
+    if(f.reference.value === 'Other' && !f.refOther.value.trim()){ setInvalid(f.refOther,true); ok=false; }
     return ok;
   }
 
@@ -444,7 +484,10 @@
     const msgParts = [];
     if(isOther && otherText){ msgParts.push('Property Type: ' + otherText); }
     msgParts.push('Budget: ' + budgetLabel);
-    msgParts.push('Reference: ' + reference);
+    let refDetail = reference;
+    if(reference === 'CP/Broker'){ refDetail += ' (Name: ' + f.cpName.value.trim() + ', Contact: ' + f.cpPhone.value.trim() + ')'; }
+    if(reference === 'Other'){ refDetail += ' (' + f.refOther.value.trim() + ')'; }
+    msgParts.push('Reference: ' + refDetail);
     const message = msgParts.join(' | ');
 
     const payload = {
@@ -495,6 +538,7 @@
 
   document.getElementById('againBtn').addEventListener('click', () => {
     form.reset(); clearAll(); otherTypeField.style.display='none';
+    cpFields.style.display='none'; refOtherField.style.display='none';
     doneState.classList.remove('show');
     projectBanner.style.display='block'; formBody.style.display='block';
     window.scrollTo({top:0, behavior:'smooth'});
